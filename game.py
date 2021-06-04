@@ -28,15 +28,15 @@ class Maze(QuestGame):
     """
 
     player_sprite_image = ("images/DungeonTiles/frames/knight_m_idle_anim_f1.png")
-    screen_width = 500
-    screen_height = 500
-    left_viewport_margin = 96
-    right_viewport_margin = 96
-    bottom_viewport_margin = 96
-    top_viewport_margin = 96
-    player_initial_x = 300
-    player_initial_y = 300
-    player_speed = 6
+    screen_width = 300
+    screen_height = 300
+    left_viewport_margin = 150
+    right_viewport_margin = 150
+    bottom_viewport_margin = 150
+    top_viewport_margin = 150
+    player_initial_x = 430
+    player_initial_y = 120
+    player_speed = 4
 
     def setup_maps(self):
         """Sets up the map.
@@ -59,7 +59,12 @@ class Maze(QuestGame):
         """
         self.wall_list = self.get_current_map().get_layer_by_name("walls").sprite_list
 
+    def instructions(self):
+        print(" ")
+        print("W,A,S,D to move, E to attack")
+
 
 if __name__ == '__main__':
     game = Maze()
+    game.instructions()
     game.run()

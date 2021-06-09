@@ -36,7 +36,7 @@ class Maze(QuestGame):
     top_viewport_margin = 150
     player_initial_x = 430
     player_initial_y = 120
-    player_speed = 4
+    player_speed = 3
 
     def setup_maps(self):
         """Sets up the map.
@@ -61,7 +61,7 @@ class Maze(QuestGame):
 
     def instructions(self):
         print(" ")
-        print("W,A,S,D to move, E to attack")
+        print("W,A,S,D to move, SPACE to attack")
 
 
 if __name__ == '__main__':

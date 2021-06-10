@@ -63,6 +63,9 @@ class Maze(QuestGame):
         print(" ")
         print("W,A,S,D to move, SPACE to attack")
 
+    def enemy(self):
+        
+
 
 if __name__ == '__main__':
     game = Maze()

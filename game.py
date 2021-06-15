@@ -8,11 +8,14 @@
 
 from quest.game import QuestGame
 from quest.map import TiledMap
-from quest.sprite import Background, Wall
-from quest.helpers import resolve_resource_path
+from quest.sprite import Background, Wall, NPC, QuestSprite, Player
+from quest.helpers import scale, resolve_resource_path
+from quest.strategy import RandomWalk
 import arcade
 import os
 from pathlib import Path
+import time
+
 
 class Maze(QuestGame):
     """A very simple subclass of :py:class:`QuestGame`.
@@ -34,9 +37,16 @@ class Maze(QuestGame):
     right_viewport_margin = 150
     bottom_viewport_margin = 150
     top_viewport_margin = 150
-    player_initial_x = 430
-    player_initial_y = 120
+    player_initial_x = 340
+    player_initial_y = 250
     player_speed = 3
+    health = 100
+
+
+    def reduce_health(self):
+        self.health = self.health - 10
+        if self.health <= 0:
+            pass
 
     def setup_maps(self):
         """Sets up the map.
@@ -48,6 +58,7 @@ class Maze(QuestGame):
         sprite_classes = {
             "walls": Wall,
             "play": Background,
+            "exit": Background,
         }
         island_map = TiledMap(("images/qwerty_game_1.tmx"), sprite_classes)
         self.add_map(island_map)
@@ -63,9 +74,36 @@ class Maze(QuestGame):
         print(" ")
         print("W,A,S,D to move, SPACE to attack")
 
-    def enemy(self):
-        
 
+    def setup_npcs(self):
+        npc_data = []
+        for i in range(1):
+            npc_data.append([mob, "images/DungeonTiles/frames/big_demon_idle_anim_f3.png", 0.8, 430, 140])
+        self.npc_list = arcade.SpriteList()
+        for sprite_class, image, scale, x, y in npc_data:
+            sprite = sprite_class(image, scale)
+            sprite.center_x = x
+            sprite.center_y = y
+            self.npc_list.append(sprite)
+        walk = RandomWalk(0.03)
+        mob.strategy = walk
+
+class mob(NPC):
+    repel_distance = 30
+
+    def on_collision(self, sprite, game):
+        if isinstance(sprite, Player):
+            self.repel(sprite)
+            game.reduce_health()
+            print(game.health)
+
+    def repel(self, sprite):
+        "Backs the sprite away from self"
+        away = (self.center_x - sprite.center_x, self.center_y - sprite.center_y)
+        away_x, away_y = scale(away, self.repel_distance)
+        sprite.center_x = sprite.center_x - away_x
+        sprite.center_y = sprite.center_y - away_y
+        sprite.stop()
 
 if __name__ == '__main__':
     game = Maze()

@@ -44,9 +44,15 @@ class Maze(QuestGame):
 
 
     def reduce_health(self):
-        self.health = self.health - 10
+        self.health = self.health - 20
         if self.health <= 0:
-            pass
+            print("you died")
+            self.player.center_x = self.player_initial_x
+            self.player.center_y = self.player_initial_y
+            self.health = 100
+
+
+
 
     def setup_maps(self):
         """Sets up the map.
@@ -78,24 +84,44 @@ class Maze(QuestGame):
     def setup_npcs(self):
         npc_data = []
         for i in range(1):
-            npc_data.append([mob, "images/DungeonTiles/frames/big_demon_idle_anim_f3.png", 0.8, 430, 140])
+            npc_data.append([mob, "images/DungeonTiles/frames/big_demon_idle_anim_f3.png", 0.8, 500, 140])
+            npc_data.append([mob, "images/DungeonTiles/frames/big_demon_idle_anim_f3.png", 0.8, 100, 140])
         self.npc_list = arcade.SpriteList()
         for sprite_class, image, scale, x, y in npc_data:
             sprite = sprite_class(image, scale)
             sprite.center_x = x
             sprite.center_y = y
             self.npc_list.append(sprite)
+
+        monster = self.npc_list[0]
         walk = RandomWalk(0.03)
-        mob.strategy = walk
+        monster.strategy = walk
+
+        monster2 = self.npc_list[1]
+        walk = RandomWalk(0.03)
+        monster2.strategy = walk
 
 class mob(NPC):
-    repel_distance = 30
+    repel_distance = 20
+    hit = False
+    hit_count= 0
 
     def on_collision(self, sprite, game):
         if isinstance(sprite, Player):
             self.repel(sprite)
             game.reduce_health()
+            self.hit = True
             print(game.health)
+
+    def on_update(self,game):
+        if self.hit == True and self.hit_count <150:
+            self.stop()
+            self.hit_count +=1
+        elif self.strategy:
+            self.set_course(self.strategy.choose_course(self, game))
+            self.hit_count = 0
+            self.hit = False
+
 
     def repel(self, sprite):
         "Backs the sprite away from self"
